@@ -3,7 +3,6 @@ Feel free to make any changes (stupid thing to say on github, i know) and ask me
 
 There is lots of room for improvement - those things have yet to be implemented:
 - being able to exit full-screen  --> a better resize-handling is necessary
-- add a counter for the unflagged bombs
 - show a score board
 - shorten the response-time
 - remove unnecessary comments (especially the ones i made in German)
@@ -11,5 +10,6 @@ There is lots of room for improvement - those things have yet to be implemented:
 
 Already done in updates:
 - implement a windows-minesweeper-like middleclick event
+- add a counter for flagged squares (= tiles)
 
 PS: I still don't fully understand the concept of github so please tell me if i did something stupid at some point.
