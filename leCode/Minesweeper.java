@@ -70,25 +70,25 @@ public class Minesweeper {
 		F.addMouseListener(new MouseAdapter() {
 			
 			public void mouseClicked(MouseEvent e) {
+				
+				//LMB was clicked
 				if (e.getButton() == MouseEvent.BUTTON1) {
-					//LMB was clicked
-					
 					if (getIsTimerRunning() == false) {
 						startTimer();
 						setIsTimerRunning(true);
 					}
-					
-					squareClicked(e.getX(), e.getY(), "LMB");
-					
+					squareClicked(e.getX(), e.getY(), "LMB");	
 				}
 				
+				//RMB was clicked
 				else if (e.getButton() == MouseEvent.BUTTON3) {
-					//RMB was clicked
-					
 					squareClicked(e.getX(), e.getY(), "RMB");
-				
 				}
 				
+				//MMB was clicked
+				else if (e.getButton() == MouseEvent.BUTTON2) {
+					squareClicked(e.getX(), e.getY(), "MMB");
+				}
 			}
 			
 	    });
@@ -139,7 +139,7 @@ public class Minesweeper {
 			
 			//no mine, no number
 			else if (squareState[squareX][squareY] == 12){
-				uncoverMinesAround(squareX, squareY);
+				uncoverEmptySquaresAround(squareX, squareY);
 				F.repaint();
 			}
 			coveredState[squareX][squareY] = false;
@@ -150,6 +150,9 @@ public class Minesweeper {
 		else if (mouseButton == "RMB" && coveredState[squareX][squareY]) {
 			flaggedState[squareX][squareY] = !flaggedState[squareX][squareY];
 			F.repaint(getGridOffsetX()+squareX*getSquareSize(), getGridOffsetY()+squareY*getSquareSize(), getSquareSize(), getSquareSize());
+		}
+		else if (mouseButton == "MMB" & !coveredState[squareX][squareY] && squareState[squareX][squareY] >= 1 && squareState[squareX][squareY] <= 8) {
+			checkIfAbleToUncoverMinesAround(squareX, squareY);
 		}
 	}
 	
@@ -171,7 +174,38 @@ public class Minesweeper {
 		setWholeGridCovered(false);
 	}
 	
-	private static void uncoverMinesAround(int x, int y) {
+	//Event after a middle-mouse-button click
+	private static void checkIfAbleToUncoverMinesAround(int x, int y) {
+		int numberOfAdjacentFlags = 0;
+		int j;
+		for (int i = -1; i < 2; i++) {
+			for (j = -1; j < 1; j++) {
+				if (x+i < numberOfSquaresX && x+i > 0 && y+j < numberOfSquaresY && y+j > 0 && flaggedState[x+i][y+j] == true) numberOfAdjacentFlags++;
+			}
+			if (x+i < numberOfSquaresX && x+i > 0 && y+j < numberOfSquaresY && y+j > 0 && flaggedState[x+i][y+j] == true) numberOfAdjacentFlags++;
+		}
+		uncoverAdjacentFieldsAfterMiddleclick(x, y, numberOfAdjacentFlags);
+	}
+	
+	private static void uncoverAdjacentFieldsAfterMiddleclick(int x, int y, int numberOfAdjacentFlags) {
+		//checking if there is the same number of adjacent flags as there are mines --> if not: quit this method
+		if (numberOfAdjacentFlags != squareState[x][y]) {
+			return;
+		}
+
+		int j;
+		for (int i = -1; i < 2; i++) {
+			for (j = -1; j < 1; j++) {
+				//Simulates a left mouseclick. The "if" is just for the first and last squares (X and Y) so there are no errors.
+				if (x+i < numberOfSquaresX && x+i > 0 && y+j < numberOfSquaresY && y+j > 0) uncover(x+i, y+j, "LMB");
+			}
+			//Simulates a left mouseclick. The "if" is just for the first and last squares (X and Y) so there are no errors.
+			if (x+i < numberOfSquaresX && x+i > 0 && y+j < numberOfSquaresY && y+j > 0) uncover(x+i, y+j, "LMB");
+		}
+		
+	}
+	
+	private static void uncoverEmptySquaresAround(int x, int y) {
 		//Has to check cross first: then has to uncover those plain squares
 		//Then check all 8 adjacent squares for every single plain square and uncover them fucking numbers
 		//Problem is, that the user goes to uncoverMinesAround() before all the empty squares nearby could be identified --> solution: array?
@@ -219,16 +253,16 @@ public class Minesweeper {
 		}
 		
 		if (uncoverBelow) {
-			uncoverMinesAround(x, y-1);
+			uncoverEmptySquaresAround(x, y-1);
 		}
 		if (uncoverAbove) {
-			uncoverMinesAround(x, y+1);
+			uncoverEmptySquaresAround(x, y+1);
 		}
 		if (uncoverLeft) {
-			uncoverMinesAround(x-1, y);
+			uncoverEmptySquaresAround(x-1, y);
 		}
 		if (uncoverRight) {
-			uncoverMinesAround(x+1, y);
+			uncoverEmptySquaresAround(x+1, y);
 		}
 		uncoverAbove = false;
 		uncoverBelow = false;
