@@ -28,6 +28,7 @@ public class Minesweeper {
 	private static int gameTime = 0;
 	private static int numberOfSquaresX = 32;
 	private static int numberOfSquaresY = 18;
+	private static int unflaggedMinesRemaining = mines;
 	private static int [] [] squareState = new int [numberOfSquaresX] [numberOfSquaresY]; //mine / clicked mine / empty / numbers...
 	private static boolean [] [] coveredState = new boolean [numberOfSquaresX] [numberOfSquaresY]; //still covered by top layer? t / f
 	private static boolean [] [] flaggedState = new boolean [numberOfSquaresX] [numberOfSquaresY];
@@ -36,7 +37,7 @@ public class Minesweeper {
 	static Timer timer = new Timer(1000, null);
 	private static boolean isTimerRunning = false;
 	private static Button restartButton;
-	
+	private static Font font = new Font("Arial", Font.PLAIN, 14);
 	
 	private static Image imageCovered = null;
 	private static Image image1 = null;
@@ -51,6 +52,7 @@ public class Minesweeper {
 	private static Image imageMine = null;
 	private static Image imageMineClicked = null;
 	private static Image imageEmptySquare = null;
+	private static Image imageClock = null;
 	
 	public static void main (String args[]) {
 		MyFrame meinFrame;
@@ -128,6 +130,7 @@ public class Minesweeper {
 	}
 	
 	private static void uncover(int squareX, int squareY, String mouseButton) {
+		//LMB on a square
 		if (mouseButton == "LMB" && coveredState[squareX][squareY] && !flaggedState[squareX][squareY]) {
 			
 			//clicked on a mine
@@ -137,7 +140,7 @@ public class Minesweeper {
 				F.repaint();
 			}
 			
-			//no mine, no number
+			//empty square
 			else if (squareState[squareX][squareY] == 12){
 				uncoverEmptySquaresAround(squareX, squareY);
 				F.repaint();
@@ -147,13 +150,28 @@ public class Minesweeper {
 			checkIfGameWon();
 		}
 		
+		//RMB on a square
 		else if (mouseButton == "RMB" && coveredState[squareX][squareY]) {
 			flaggedState[squareX][squareY] = !flaggedState[squareX][squareY];
+			mineUnflagged(squareX, squareY, flaggedState[squareX][squareY]);
 			F.repaint(getGridOffsetX()+squareX*getSquareSize(), getGridOffsetY()+squareY*getSquareSize(), getSquareSize(), getSquareSize());
 		}
+		
+		//MMB on a square
 		else if (mouseButton == "MMB" & !coveredState[squareX][squareY] && squareState[squareX][squareY] >= 1 && squareState[squareX][squareY] <= 8) {
 			checkIfAbleToUncoverMinesAround(squareX, squareY);
 		}
+	}
+	
+	//this method is doing the calculation for the string displaying: remaining number of mines - number of flags
+	private static void mineUnflagged(int x, int y, boolean isFlagged) {
+		if (isFlagged) unflaggedMinesRemaining--;
+		else if (!isFlagged) unflaggedMinesRemaining++;
+		//this drawing-method is a workaround for a repaint()-bug. Can't specify the correct area.. Also placed in paint().
+		Graphics g = F.getGraphics().create();
+		g.setFont(font);
+		g.clearRect(width-115, 25, 25, 20);
+		g.drawString("" + unflaggedMinesRemaining, width-115, 45);
 	}
 	
 	private static void checkIfGameWon() {
@@ -180,9 +198,9 @@ public class Minesweeper {
 		int j;
 		for (int i = -1; i < 2; i++) {
 			for (j = -1; j < 1; j++) {
-				if (x+i < numberOfSquaresX && x+i > 0 && y+j < numberOfSquaresY && y+j > 0 && flaggedState[x+i][y+j] == true) numberOfAdjacentFlags++;
+				if (x+i < numberOfSquaresX && x+i >= 0 && y+j < numberOfSquaresY && y+j >= 0 && flaggedState[x+i][y+j] == true) numberOfAdjacentFlags++;
 			}
-			if (x+i < numberOfSquaresX && x+i > 0 && y+j < numberOfSquaresY && y+j > 0 && flaggedState[x+i][y+j] == true) numberOfAdjacentFlags++;
+			if (x+i < numberOfSquaresX && x+i >= 0 && y+j < numberOfSquaresY && y+j >= 0 && flaggedState[x+i][y+j] == true) numberOfAdjacentFlags++;
 		}
 		uncoverAdjacentFieldsAfterMiddleclick(x, y, numberOfAdjacentFlags);
 	}
@@ -197,18 +215,18 @@ public class Minesweeper {
 		for (int i = -1; i < 2; i++) {
 			for (j = -1; j < 1; j++) {
 				//Simulates a left mouseclick. The "if" is just for the first and last squares (X and Y) so there are no errors.
-				if (x+i < numberOfSquaresX && x+i > 0 && y+j < numberOfSquaresY && y+j > 0) uncover(x+i, y+j, "LMB");
+				if (x+i < numberOfSquaresX && x+i >= 0 && y+j < numberOfSquaresY && y+j >= 0) uncover(x+i, y+j, "LMB");
 			}
 			//Simulates a left mouseclick. The "if" is just for the first and last squares (X and Y) so there are no errors.
-			if (x+i < numberOfSquaresX && x+i > 0 && y+j < numberOfSquaresY && y+j > 0) uncover(x+i, y+j, "LMB");
+			if (x+i < numberOfSquaresX && x+i >= 0 && y+j < numberOfSquaresY && y+j >= 0) uncover(x+i, y+j, "LMB");
 		}
 		
 	}
 	
+	//This is the method that uncovers all the plain squares around a plain square that has just been pressed
 	private static void uncoverEmptySquaresAround(int x, int y) {
 		//Has to check cross first: then has to uncover those plain squares
 		//Then check all 8 adjacent squares for every single plain square and uncover them fucking numbers
-		//Problem is, that the user goes to uncoverMinesAround() before all the empty squares nearby could be identified --> solution: array?
 		int adjacentX;
 		int adjacentY;
 		boolean uncoverRight = false;
@@ -353,7 +371,7 @@ public class Minesweeper {
     }
     
     private static void relocateButtonWithFrameSize(int width, int height) {
-    	restartButton.setLocation(width/2, 25);
+    	restartButton.setLocation(width/2, 26);
     }
        
      private static int getSquareSize() {
@@ -454,10 +472,12 @@ public class Minesweeper {
 		public void paint(Graphics g) {
     		 super.paint(g); 	
     		     		 
-    		 Font font = new Font("Arial", Font.PLAIN, 14);
     		 g.setFont(font);
-    		 g.drawString("" + gameTime, width-50, 42);
-    		 
+    		 g.drawString("" + gameTime, width-50, 45); 
+    		 g.clearRect(width-100, 25, 25, 20);
+    		 g.drawString("" + unflaggedMinesRemaining, width-115, 45);
+    		 g.drawImage(imageFlag, width-130, 32, width-115, 47, 0, 0, 64, 64, null);
+    		 g.drawImage(imageClock, width-70, 32, width-55, 47, 0, 0, 64, 64, null);
     		 
     		 //all Squares covered, initial state 	--> state 0
         	 //numbers (adjacent to mines)			--> state 1 - 8
@@ -531,6 +551,7 @@ public class Minesweeper {
 	             imageMine = ImageIO.read(getClass().getClassLoader().getResource("leCode/mine.png"));
 	             imageMineClicked = ImageIO.read(getClass().getClassLoader().getResource("leCode/mine_activated.png"));
 	             imageEmptySquare = ImageIO.read(getClass().getClassLoader().getResource("leCode/empty_pressed.jpg"));
+	             imageClock = ImageIO.read(getClass().getClassLoader().getResource("leCode/clock.jpg"));
 	         } 
 	         catch (IOException ex) {
 	             System.out.println("Image is null");
