@@ -32,6 +32,7 @@ public class Minesweeper {
 	private static int [] [] squareState = new int [numberOfSquaresX] [numberOfSquaresY]; //mine / clicked mine / empty / numbers...
 	private static boolean [] [] coveredState = new boolean [numberOfSquaresX] [numberOfSquaresY]; //still covered by top layer? t / f
 	private static boolean [] [] flaggedState = new boolean [numberOfSquaresX] [numberOfSquaresY];
+	private static Image [] images = new Image [13];
 	static MyFrame F = new MyFrame();
 	private static ActionListener taskPerformer; 
 	static Timer timer = new Timer(1000, null);
@@ -486,22 +487,6 @@ public class Minesweeper {
         	 //mine clicked 	 					--> state 11
     		 //clicked and empty square				--> state 12
     		 
-    		 //this is redundant --> array could be initialised at the beginning instead of image1, image2 ...
-    		 Image [] images = new Image [13];
-    		 images[0] = imageCovered;
-    		 images[1] = image1;
-    		 images[2] = image2;
-    		 images[3] = image3;
-    		 images[4] = image4;
-    		 images[5] = image5;
-    		 images[6] = image6;
-    		 images[7] = image7;
-    		 images[8] = image8;
-    		 images[9] = imageFlag;
-    		 images[10] = imageMine;
-    		 images[11] = imageMineClicked;
-    		 images[12] = imageEmptySquare;
-    		 
     		 int xIncr;
     		 for (int yIncr = 0; yIncr < numberOfSquaresY; yIncr++) {
     			 for (xIncr = 0; xIncr < numberOfSquaresX - 1; xIncr++) {
@@ -556,6 +541,19 @@ public class Minesweeper {
 	         catch (IOException ex) {
 	             System.out.println("Image is null");
 	         }
+    		 images[0] = imageCovered;
+    		 images[1] = image1;
+    		 images[2] = image2;
+    		 images[3] = image3;
+    		 images[4] = image4;
+    		 images[5] = image5;
+    		 images[6] = image6;
+    		 images[7] = image7;
+    		 images[8] = image8;
+    		 images[9] = imageFlag;
+    		 images[10] = imageMine;
+    		 images[11] = imageMineClicked;
+    		 images[12] = imageEmptySquare;
 	     }
 		   	 
      }
