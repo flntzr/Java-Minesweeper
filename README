@@ -5,8 +5,10 @@ There is lots of room for improvement - those things have yet to be implemented:
 - being able to exit full-screen  --> a better resize-handling is necessary
 - add a counter for the unflagged bombs
 - shorten the response-time
-- implement a windows-minesweeper-like middleclick event
 - remove unnecessary comments (especially the ones i made in German)
 - add nicer images
+
+Already done in updates:
+- implement a windows-minesweeper-like middleclick event
 
 PS: I still don't fully understand the concept of github so please tell me if i did something stupid at some point.
