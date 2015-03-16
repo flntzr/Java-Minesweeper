@@ -1,16 +1,4 @@
 I've created a simple lightweight java-based version of minesweeper with the help of a friend and reddit.
-Feel free to make any changes (stupid thing to say on github, i know) and ask me if you don't understand parts of my code..
 
-There is lots of room for improvement - those things have yet to be implemented:
-- being able to exit full-screen  --> a better resize-handling is necessary
-- show a score board
-- shorten the response-time
-- remove unnecessary comments (especially the ones i made in German)
-- add nicer images
-
-Already done in updates:
-- implement a windows-minesweeper-like middleclick event
-- add a counter for flagged squares (= tiles)
-
-PS: I still don't fully understand the concept of github so please tell me if i did something stupid at some point 
-or if any files display my credit card numbers ;)
+Edit several years later:
+This is an example how not to code in Java. This was my first own Java project and should be treated that way.
